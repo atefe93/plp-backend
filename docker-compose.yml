@@ -1,0 +1,75 @@
+version: '3'
+
+networks:
+  plpbackend:
+
+services:
+  nginx:
+    image: nginx:stable
+    container_name: tplpc-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./src:/var/www/html
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+      - mysql
+    networks:
+      - plpbackend
+
+  mysql:
+    image: mysql:5.7.29
+    container_name: tplpc-mysql
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - ./mysql:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: homestead
+      MYSQL_USER: homestead
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: secret
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    networks:
+      - plpbackend
+
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tplpc-php
+    volumes:
+      - ./src:/var/www/html
+    ports:
+      - "9000:9000"
+    networks:
+      - plpbackend
+
+  composer:
+    image: composer:latest
+    container_name: tplpc-composer
+    volumes:
+      - ./src:/var/www/html
+    working_dir: /var/www/html
+    depends_on:
+      - php
+    networks:
+      - plpbackend
+
+  artisan:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tplpc-artisan
+    volumes:
+      - ./src:/var/www/html
+    depends_on:
+      - mysql
+    working_dir: /var/www/html
+    entrypoint: ['php', '/var/www/html/artisan']
+    networks:
+      - plpbackend
