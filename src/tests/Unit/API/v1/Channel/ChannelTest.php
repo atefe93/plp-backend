@@ -4,6 +4,9 @@ namespace Tests\Unit\API\v1\Channel;
 
 
 use App\Models\Channel;
+use App\Models\User;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
@@ -29,18 +32,22 @@ class ChannelTest extends TestCase
 
     public function test_create_channel_should_be_validated()
     {
-        $this->json('POST', route('channel.create'), ['Accept' => 'application/json'])
+        $user = User::factory()->create();
+        $user->givePermissionTo('channel management');
+        $this->actingAs($user)->json('POST', route('channel.create'), ['Accept' => 'application/json'])
             ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
 
     }
 
     public function test_create_new_channel()
     {
-        $userData = [
+        $user = User::factory()->create();
+        $user->givePermissionTo('channel management');
+        $Data = [
             "name" => "laravel",
 
         ];
-        $this->json('POST', route('channel.create'), $userData, ['Accept' => 'application/json'])
+        $this->actingAs($user)->json('POST', route('channel.create'), $Data, ['Accept' => 'application/json'])
             ->assertStatus(Response::HTTP_CREATED);
     }
 
@@ -50,13 +57,17 @@ class ChannelTest extends TestCase
 
     public function test_update_channel_should_be_validated()
     {
-        $this->json('Put', route('channel.update'), ['Accept' => 'application/json'])
+        $user = User::factory()->create();
+        $user->givePermissionTo('channel management');
+        $this->actingAs($user)->json('Put', route('channel.update'), ['Accept' => 'application/json'])
             ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
 
     }
 
     public function test_channel_update()
     {
+        $user = User::factory()->create();
+        $user->givePermissionTo('channel management');
         $channel = Channel::factory()->create([
             'name' => 'laravel'
         ]);
@@ -64,7 +75,7 @@ class ChannelTest extends TestCase
 
         $channelData = ['id' => $channel->id, 'name' => 'jquery'];
 
-        $this->json('Put', route('channel.update'), $channelData, ['Accept' => 'application/json'])
+        $this->actingAs($user)->json('Put', route('channel.update'), $channelData, ['Accept' => 'application/json'])
             ->assertStatus(Response::HTTP_OK);
         $updatedChannel = Channel::find($channel->id);
         $this->assertEquals('jquery', $updatedChannel->name);
@@ -74,16 +85,20 @@ class ChannelTest extends TestCase
 
     public function test_delete_channel_should_be_validated()
     {
-        $this->json('DELETE', route('channel.delete'), ['Accept' => 'application/json'])
+        $user = User::factory()->create();
+        $user->givePermissionTo('channel management');
+        $this->actingAs($user)->json('DELETE', route('channel.delete'), ['Accept' => 'application/json'])
             ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
 
     }
 
     public function test_channel_delete()
     {
+        $user = User::factory()->create();
+        $user->givePermissionTo('channel management');
         $channel = Channel::factory()->create();
 
-        $this->json('DELETE', route('channel.delete'),['id'=>$channel->id] , ['Accept' => 'application/json'])
+        $this->actingAs($user)->json('DELETE', route('channel.delete'),['id'=>$channel->id] , ['Accept' => 'application/json'])
             ->assertStatus(Response::HTTP_OK);
     }
 
