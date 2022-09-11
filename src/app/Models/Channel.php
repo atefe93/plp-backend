@@ -11,10 +11,10 @@ class Channel extends Model
     use HasFactory;
     protected $fillable = ['name', 'slug'];
 
-    protected static function newFactory()
-    {
-        return ChannelFactory::new();
-    }
+//    protected static function newFactory()
+//    {
+//        return ChannelFactory::new();
+//    }
 
     public function threads()
     {

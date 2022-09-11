@@ -5,16 +5,19 @@ namespace Tests\Unit\API\v1\Auth;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
 {
-   use RefreshDatabase;
+
 
    /*
     * Test Register
    */
+
 
     public function test_register_should_be_validated()
     {
@@ -25,6 +28,7 @@ class AuthTest extends TestCase
     }
     public function test_new_user_can_register()
     {
+
         $userData = [
             "name" => "ohn Doe",
             "email" => "oeggllg@example.com",

@@ -10,7 +10,7 @@ use Tests\TestCase;
 
 class ChannelTest extends TestCase
 {
-    use RefreshDatabase;
+
 
     /**
      * Test Get All Channels List Should Be Accessible

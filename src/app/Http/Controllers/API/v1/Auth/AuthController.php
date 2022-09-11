@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
 {
+
     /**
      * Register New User
      * @method POST
@@ -22,16 +23,18 @@ class AuthController extends Controller
     {
 
         $request->validate([
-            'name'=>['required'],
-            'email'=>['required','email','unique:users'],
-            'password'=>['required'],
+            'name' => ['required'],
+            'email' => ['required', 'email', 'unique:users'],
+            'password' => ['required'],
         ]);
 
-        resolve(UserRepository::class)->create($request);
+        $user = resolve(UserRepository::class)->create($request);
+        $defaultSuperAdminEmail = config('permission.default_super_admin_email');
+        $user->email == $defaultSuperAdminEmail ? $user->assignRole('Super Admin') : $user->assignRole('User');
 
         return response()->json([
-            'message'=>'user created successfully'
-        ],Response::HTTP_CREATED);
+            'message' => 'user created successfully'
+        ], Response::HTTP_CREATED);
     }
 
     /**
@@ -46,24 +49,24 @@ class AuthController extends Controller
         //Validate Form Inputs
 
         $request->validate([
-            'email'=>['required','email'],
-            'password'=>['required'],
+            'email' => ['required', 'email'],
+            'password' => ['required'],
         ]);
 
         //Check User Credentials For Login
-        if (Auth::attempt($request->only(['email','password']))){
+        if (Auth::attempt($request->only(['email', 'password']))) {
 
-            return response()->json(Auth::user(),Response::HTTP_OK);
+            return response()->json(Auth::user(), Response::HTTP_OK);
 
         }
         throw ValidationException::withMessages([
-            'email'=>'incorrect credentials'
+            'email' => 'incorrect credentials'
         ]);
     }
 
     public function user()
     {
-        return response()->json(Auth::user(),Response::HTTP_OK);
+        return response()->json(Auth::user(), Response::HTTP_OK);
 
     }
 
@@ -72,8 +75,8 @@ class AuthController extends Controller
         Auth::logout();
 
         return response()->json([
-            'message'=>'logged out successfully'
-        ],Response::HTTP_OK);
+            'message' => 'logged out successfully'
+        ], Response::HTTP_OK);
 
     }
 
