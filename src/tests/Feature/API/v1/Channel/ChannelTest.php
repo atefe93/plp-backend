@@ -1,14 +1,11 @@
 <?php
 
-namespace Tests\Unit\API\v1\Channel;
+namespace Tests\Feature\API\v1\Channel;
 
 
 use App\Models\Channel;
 use App\Models\User;
 use Laravel\Sanctum\Sanctum;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 

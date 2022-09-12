@@ -1,14 +1,16 @@
 <?php
 
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Thread extends Model
 {
     use HasFactory;
-    protected $guarded = [];
+
+    protected $fillable = ['title', 'slug','content','user_id','channel_id'];
+
+
 
     public function channel()
     {
