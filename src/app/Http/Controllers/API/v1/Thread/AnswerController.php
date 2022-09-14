@@ -7,6 +7,7 @@ use App\Models\Answer;
 use App\Repositories\AnswerRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Gate;
 
 class AnswerController extends Controller
 {
@@ -38,19 +39,31 @@ class AnswerController extends Controller
             'content'=>'required',
 
         ]);
-        resolve(AnswerRepository::class)->update($request,$answer);
+        if (Gate::forUser(auth()->user())->allows('user-answer', $answer)){
+            resolve(AnswerRepository::class)->update($request,$answer);
 
+            return response()->json(
+                ['message' => 'answer updated successfully']
+                , Response::HTTP_OK);
+        }
         return response()->json(
-            ['message' => 'answer updated successfully']
-            , Response::HTTP_OK);
+            ['message' => 'access denied']
+            , Response::HTTP_FORBIDDEN);
+
     }
 
     public function destroy(Answer $answer)
     {
-
-        resolve(AnswerRepository::class)->destroy($answer);
+        if (Gate::forUser(auth()->user())->allows('user-answer', $answer)){
+            resolve(AnswerRepository::class)->destroy($answer);
+            return response()->json(
+                ['message' => 'answer deleted successfully']
+                , Response::HTTP_OK);
+        }
         return response()->json(
-            ['message' => 'answer deleted successfully']
-            , Response::HTTP_OK);
+            ['message' => 'access denied']
+            , Response::HTTP_FORBIDDEN);
+
+
     }
 }

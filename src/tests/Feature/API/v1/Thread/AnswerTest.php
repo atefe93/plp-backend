@@ -58,7 +58,7 @@ class AnswerTest extends TestCase
 
 
     }
-    public function test_answer_update()
+    public function test_own_answer_update()
     {
         $user = User::factory()->create();
         Sanctum::actingAs($user);
