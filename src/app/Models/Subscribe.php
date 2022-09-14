@@ -19,4 +19,6 @@ class Subscribe extends Model
     {
         return $this->belongsTo(Thread::class);
     }
+
+
 }
