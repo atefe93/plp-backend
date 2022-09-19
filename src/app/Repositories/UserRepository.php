@@ -10,10 +10,10 @@ use Illuminate\Support\Facades\Hash;
 
 class UserRepository
 {
-    /**
-     * @return User
-     * @param Request $request
-     */
+    public function find($id)
+    {
+        return User::find($id);
+    }
     public function create(Request $request):User
     {
       return  User::create([
@@ -21,5 +21,9 @@ class UserRepository
             'email' => $request->email,
             'password' => Hash::make($request->password)
         ]);
+    }
+    public function leaderboards()
+    {
+        return User::query()->orderByDesc('score')->paginate(20);
     }
 }

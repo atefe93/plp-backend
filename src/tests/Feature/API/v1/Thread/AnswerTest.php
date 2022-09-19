@@ -47,26 +47,47 @@ class AnswerTest extends TestCase
         $this->assertTrue($threat->answers()->where('content', 'bar')->exists());
 
     }
+
+    public function test_user_score_will_increase_by_submit_new_answer()
+    {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+        $threat = Thread::factory()->create();
+        $this->json('POST', route('answers.store'),
+            [
+                "content" => "bar",
+                "thread_id" => $threat->id,
+            ]
+            , ['Accept' => 'application/json'])
+            ->assertStatus(Response::HTTP_CREATED);
+
+        $user->refresh();
+
+        $this->assertEquals(10, $user->score);
+
+    }
+
     public function test_update_answer_should_be_validated()
     {
         $user = User::factory()->create();
         Sanctum::actingAs($user);
-        $answer=Answer::factory()->create();
-        $this->json('PUT', route('answers.update',[$answer]), [], ['Accept' => 'application/json'])
+        $answer = Answer::factory()->create();
+        $this->json('PUT', route('answers.update', [$answer]), [], ['Accept' => 'application/json'])
             ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
             ->assertJsonValidationErrors(['content']);
 
 
     }
+
     public function test_own_answer_update()
     {
         $user = User::factory()->create();
         Sanctum::actingAs($user);
         $answer = Answer::factory()->create([
             "content" => "foo",
-            "user_id"=>$user->id
+            "user_id" => $user->id
         ]);
-        $this->json('PUT', route('answers.update',[$answer]),
+        $this->json('PUT', route('answers.update', [$answer]),
             [
                 "content" => "bar",
             ]
@@ -84,10 +105,10 @@ class AnswerTest extends TestCase
         Sanctum::actingAs($user);
 
         $answer = Answer::factory()->create([
-            "user_id"=>$user->id
+            "user_id" => $user->id
         ]);
 
-        $this->json('DELETE', route('answers.destroy',[$answer]) , ['Accept' => 'application/json'])
+        $this->json('DELETE', route('answers.destroy', [$answer]), ['Accept' => 'application/json'])
             ->assertStatus(Response::HTTP_OK);
         $this->assertFalse(Answer::whereId($answer->id)->exists());
 
