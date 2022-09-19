@@ -11,6 +11,11 @@ use Illuminate\Http\Response;
 
 class SubscribeController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['user-block']);
+    }
+
     public function subscribe(Thread $thread)
     {
         resolve(SubscribeRepository::class)->subscribe($thread);
